@@ -78,6 +78,8 @@ fn main() {
            "encript" | "encrip" | "e" => println!("{}", encriptar(&vetor_padrao, &alfabeto_alterado)),
            "decript" | "decrip" | "d" => println!("{}", decriptar(&vetor_padrao, &alfabeto_alterado)),
 
+           "malfabeto" => println!("{:?} \n{:?}", &vetor_padrao, &alfabeto_alterado),
+
            "parar" | "stop" | "st" | "p"=> {
                 println!("Parando programa...");
                 break;
