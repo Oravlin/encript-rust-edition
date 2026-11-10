@@ -1,4 +1,4 @@
-use std::{io::Read, ops::Index, str::{self, FromStr}};
+use std::{str::{self, FromStr}};
 
 use rand::random_range;
 
@@ -13,10 +13,10 @@ fn input<T: FromStr>() -> Result<T, T::Err>{
 
 fn encriptar(vetor_padrao:&Vec<&str>, alfabeto_alterado:&Vec<&str>) -> String{
     println!("O que deseja encriptar?");
-    let texto:String  = input().expect("eita");
+    let texto :String  = input().expect("eita");
     // transforma o texto em um vetor
     let mut texto_vec :Vec<&str> = texto.split("").collect();
-    // retira valores vazis
+    // retira valores vazios
     texto_vec.remove(0);
     texto_vec.remove(texto_vec.len() - 1);
     let mut resposta :String = String::new();
@@ -33,6 +33,22 @@ fn encriptar(vetor_padrao:&Vec<&str>, alfabeto_alterado:&Vec<&str>) -> String{
     return resposta
 }
 
+fn decriptar(vetor_padrao:&Vec<&str>, alfabeto_alterado:&Vec<&str>) -> String{
+    println!("O que deseja decriptar?");
+    let texto :String = input().expect("eita");
+    let mut texto_vec :Vec<&str> = texto.split("").collect();
+    texto_vec.remove(0);
+    texto_vec.remove(texto_vec.len() - 1);
+    let mut reposta :String = String::new();
+
+    for letra in &texto_vec{
+        let letra_trocada_index = alfabeto_alterado.iter().position(|x| x == letra).unwrap();
+        let letra_original = vetor_padrao[letra_trocada_index];
+        reposta.push_str(letra_original);
+    }
+    return reposta
+}
+
 fn main() {
     // transforma a string padrão em um vetor, que permite uma manipulação melhor
     let mut vetor_padrao:Vec<&str> = ALFABETO_PADRAO.split("").collect();
@@ -41,7 +57,7 @@ fn main() {
     vetor_padrao.remove(0);
     vetor_padrao.remove(vetor_padrao.len() - 1);
 
-    // se fosse usado let mut alfabeto_alterado = vetor_padrao daria um erro de borrow, fazendo que os valores mudade em alfabeto_alterado mudassem em vetor_padrao
+    // se fosse usado let mut alfabeto_alterado = vetor_padrao daria um erro de borrow, fazendo que os valores mudem em alfabeto_alterado mudassem em vetor_padrao
     // usando o sistema de referencia (let alfabeto_alterado = &mut vetor_padrao) daria erro mais tarde na exibição
     let mut alfabeto_alterado = vetor_padrao.clone();
 
@@ -56,13 +72,14 @@ fn main() {
     }
 
     loop{
-        println!("Digite o comando:");
+        println!("Digite o comando (digite 'parar' ou 'p' para parar o programa) :");
         let comando:String = input().expect("deu ruim ao dar comando bro");
         match comando.to_ascii_lowercase().as_str(){
-           "encript" => println!("{}", encriptar(&vetor_padrao, &alfabeto_alterado)),
+           "encript" | "encrip" | "e" => println!("{}", encriptar(&vetor_padrao, &alfabeto_alterado)),
+           "decript" | "decrip" | "d" => println!("{}", decriptar(&vetor_padrao, &alfabeto_alterado)),
 
-           "parar" => {
-                println!("Parando programa");
+           "parar" | "stop" | "st" | "p"=> {
+                println!("Parando programa...");
                 break;
             },
            _ => {
