@@ -11,39 +11,37 @@ fn input<T: FromStr>() -> Result<T, T::Err>{
     return input.trim().parse::<T>()
 }
 
-fn encriptar(vetor_padrao:&Vec<&str>, alfabeto_alterado:&Vec<&str>) -> String{
+fn encriptar(vetor_padrao:&Vec<String>, alfabeto_alterado:&Vec<String>) -> String{
     println!("O que deseja encriptar?");
     let texto :String  = input().expect("eita");
     // transforma o texto em um vetor
-    let mut texto_vec :Vec<&str> = texto.split("").collect();
-    // retira valores vazios
-    texto_vec.remove(0);
-    texto_vec.remove(texto_vec.len() - 1);
+    let texto_vec :Vec<char> = texto.chars().collect();
+
     let mut resposta :String = String::new();
 
     // converte as letras comuns nas letras encriptadas
     for letra in &texto_vec{
+        let letra_string = letra.to_string();
         // pega o index
-        let letra_atual_index = vetor_padrao.iter().position(|x| x == letra).unwrap();
+        let letra_atual_index = vetor_padrao.iter().position(|x| x.to_string() == letra_string).unwrap();
         // troca a letra
-        let letra_trocada = alfabeto_alterado[letra_atual_index];
+        let letra_trocada = &alfabeto_alterado[letra_atual_index];
         // adiciona a letra para a variável final
         resposta.push_str(letra_trocada);
     }
     return resposta
 }
 
-fn decriptar(vetor_padrao:&Vec<&str>, alfabeto_alterado:&Vec<&str>) -> String{
+fn decriptar(vetor_padrao:&Vec<String>, alfabeto_alterado:&Vec<String>) -> String{
     println!("O que deseja decriptar?");
     let texto :String = input().expect("eita");
-    let mut texto_vec :Vec<&str> = texto.split("").collect();
-    texto_vec.remove(0);
-    texto_vec.remove(texto_vec.len() - 1);
+    let texto_vec :Vec<char> = texto.chars().collect();
     let mut reposta :String = String::new();
 
     for letra in &texto_vec{
-        let letra_trocada_index = alfabeto_alterado.iter().position(|x| x == letra).unwrap();
-        let letra_original = vetor_padrao[letra_trocada_index];
+        let letra_string = letra.to_string();
+        let letra_trocada_index = alfabeto_alterado.iter().position(|x| x.to_string() == letra_string).unwrap();
+        let letra_original = &vetor_padrao[letra_trocada_index];
         reposta.push_str(letra_original);
     }
     return reposta
@@ -51,11 +49,7 @@ fn decriptar(vetor_padrao:&Vec<&str>, alfabeto_alterado:&Vec<&str>) -> String{
 
 fn main() {
     // transforma a string padrão em um vetor, que permite uma manipulação melhor
-    let mut vetor_padrao:Vec<&str> = ALFABETO_PADRAO.split("").collect();
-    
-    // pela identificação ser uma string vazia, ele pega um valor vazio no primeiro e último elemento. Essas duas função abaixo apagam elas
-    vetor_padrao.remove(0);
-    vetor_padrao.remove(vetor_padrao.len() - 1);
+    let vetor_padrao:Vec<String> = ALFABETO_PADRAO.chars().map(|c| c.to_string()).collect();
 
     // se fosse usado let mut alfabeto_alterado = vetor_padrao daria um erro de borrow, fazendo que os valores mudem em alfabeto_alterado mudassem em vetor_padrao
     // usando o sistema de referencia (let alfabeto_alterado = &mut vetor_padrao) daria erro mais tarde na exibição
@@ -78,7 +72,16 @@ fn main() {
            "encript" | "encrip" | "e" => println!("{}", encriptar(&vetor_padrao, &alfabeto_alterado)),
            "decript" | "decrip" | "d" => println!("{}", decriptar(&vetor_padrao, &alfabeto_alterado)),
 
-           "malfabeto" => println!("{:?} \n{:?}", &vetor_padrao, &alfabeto_alterado),
+           "malfabeto" => println!("Alfabeto padrão: \n{:?} \nAlfabeto trocado: \n{:?}", &vetor_padrao.concat(), &alfabeto_alterado.concat()),
+
+           "import" | "i" => {
+                println!("Insira o novo alfabeto trocado:");
+                let novo_alfabeto:String = input().expect("eita");
+                let novo_vetor:Vec<String> = novo_alfabeto.chars().map(|c| c.to_string()).collect();
+                alfabeto_alterado = novo_vetor;
+                println!("Novo alfabeto cadastrado com sucesso!");
+
+           },
 
            "parar" | "stop" | "st" | "p"=> {
                 println!("Parando programa...");
